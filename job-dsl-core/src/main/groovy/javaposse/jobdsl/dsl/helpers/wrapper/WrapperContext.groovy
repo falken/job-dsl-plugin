@@ -386,11 +386,13 @@ class WrapperContext extends AbstractExtensibleContext {
      * @since 1.24
      */
     @RequiresPlugin(id = 'build-name-setter')
-    void buildName(String nameTemplate) {
+    void buildName(String nameTemplate, Boolean runAtStartArg = null, Boolean runAtEndArg = null) {
         Preconditions.checkNotNull(nameTemplate, 'Name template must not be null')
 
         wrapperNodes << new NodeBuilder().'org.jenkinsci.plugins.buildnamesetter.BuildNameSetter' {
             template nameTemplate
+            runAtStart runAtStartArg
+            runAtEnd runAtEndArg
         }
     }
 

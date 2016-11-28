@@ -820,6 +820,9 @@ class WrapperContextSpec extends Specification {
         then:
         context.wrapperNodes[0].name() == 'org.jenkinsci.plugins.buildnamesetter.BuildNameSetter'
         context.wrapperNodes[0].template[0].value() == '#${BUILD_NUMBER} && <test>'
+        context.wrapperNodes[0].runAtStart[0].value() == null
+        context.wrapperNodes[0].runAtEnd[0].value() == null
+
         1 * mockJobManagement.requirePlugin('build-name-setter')
     }
 
@@ -829,6 +832,30 @@ class WrapperContextSpec extends Specification {
 
         then:
         thrown(DslScriptException)
+    }
+
+    def 'call buildName with runAtStart'() {
+        when:
+        context.buildName('#${BUILD_NUMBER} && <test>', true)
+
+        then:
+        context.wrapperNodes[0].name() == 'org.jenkinsci.plugins.buildnamesetter.BuildNameSetter'
+        context.wrapperNodes[0].template[0].value() == '#${BUILD_NUMBER} && <test>'
+        context.wrapperNodes[0].runAtStart[0].value() == true
+        context.wrapperNodes[0].runAtEnd[0].value() == null
+        1 * mockJobManagement.requirePlugin('build-name-setter')
+    }
+
+    def 'call buildName with runAtEnd'() {
+        when:
+        context.buildName('#${BUILD_NUMBER} && <test>', null, true)
+
+        then:
+        context.wrapperNodes[0].name() == 'org.jenkinsci.plugins.buildnamesetter.BuildNameSetter'
+        context.wrapperNodes[0].template[0].value() == '#${BUILD_NUMBER} && <test>'
+        context.wrapperNodes[0].runAtStart[0].value() == null
+        context.wrapperNodes[0].runAtEnd[0].value() == true
+        1 * mockJobManagement.requirePlugin('build-name-setter')
     }
 
     def 'call codeSigning with no args'() {
